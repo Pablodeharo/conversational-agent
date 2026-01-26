@@ -1,0 +1,10 @@
+{
+  "$schema": "https://langgra.ph/schema.json",
+  "dependencies": ["."],
+  "graphs": {
+    "indexer": "./src/retrieval_graph/index_graph.py:graph",
+    "retrieval_graph": "./src/retrieval_graph/graph.py:graph",
+    "audio_graph": "./src/retrieval_graph/audio_graph.py:audio_graph"
+  },
+  "env": ".env"
+}
