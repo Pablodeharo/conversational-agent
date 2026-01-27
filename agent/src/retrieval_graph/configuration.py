@@ -44,7 +44,7 @@ class IndexConfiguration:
     )
 
     index_path: str = field(
-        default="src/retrieval_graph/data/faiss",
+        default="/home/pablo/Documentos/conversational-agent/agent/src/retrieval_graph/data/faiss",
         metadata={"description": "Path to local FAISS vectorestore."},
     )
 
@@ -87,7 +87,7 @@ class Configuration(IndexConfiguration):
     )
 
     response_model: Annotated[str, {"__template_metadata__": {"kind": "llm"}}] = field(
-        default="mixtral",
+        default="mistral",
         metadata={
             "description": "The language model used for generating responses. Should be in the form: provider/model-name."
         },

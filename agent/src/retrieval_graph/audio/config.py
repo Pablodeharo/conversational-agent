@@ -1,4 +1,9 @@
-"""Configuración para STT/TTS."""
+"""
+config.py
+
+Configuration module that extends the base Configuration class with audio-specific 
+parameters for speech-to-text (STT), text-to-speech (TTS), and voice activity detection (VAD) settings.
+"""
 
 from dataclasses import dataclass, field
 from typing import Literal

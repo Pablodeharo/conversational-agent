@@ -3,17 +3,27 @@ from pathlib import Path
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
+from pathlib import Path
+import pickle
+
 def load_vectorstore(path: str):
+    path = Path(path).expanduser().resolve()
+
+    # Si es pickle, cargar directamente
+    if path.suffix == ".pkl":
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    
+    # Si es carpeta o .faiss
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    from langchain_community.vectorstores import FAISS
+
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     )
-    if not Path(path).is_absolute():
-        # Si la ruta es relativa, hacerla relativa al directorio del módulo
-        base_path = Path(__file__).parent
-        path = str(base_path / path)
-    
+
     return FAISS.load_local(
-        path,
+        str(path),
         embeddings,
         allow_dangerous_deserialization=True,
     )

@@ -1,5 +1,3 @@
-"""Nodos de LangGraph para procesamiento de audio."""
-
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.runnables import RunnableConfig
 from retrieval_graph.audio.state import AudioState

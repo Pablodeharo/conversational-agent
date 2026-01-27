@@ -7,26 +7,25 @@ relevant documents, and formulating responses.
 """
 
 from datetime import datetime, timezone
-from typing import cast
 from pathlib import Path
+from typing import cast
 
+from pydantic import BaseModel
+from langgraph.graph import StateGraph
 from langchain_core.documents import Document
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableConfig
-from langgraph.graph import StateGraph
-from pydantic import BaseModel
 
 from retrieval_graph import retrieval
 from retrieval_graph.configuration import Configuration
 from retrieval_graph.state import InputState, State
 from retrieval_graph.utils import format_docs, get_message_text, load_chat_model
-from retrieval_graph.tools import Reflection, reflection_system_prompt
+from retrieval_graph.tools import Reflection
+from retrieval_graph.prompts import RESPONSE_SYSTEM_PROMPT, QUERY_SYSTEM_PROMPT, REFLECTION_SYSTEM_PROMPT
 from retrieval_graph.model_manager import ModelManager
-from langchain_core.messages import AIMessage, ToolMessage
-
-
 from retrieval_graph.Backend.base import GenerationConfig
+
 
 
 async def call_model(state: State, config: RunnableConfig):
@@ -125,54 +124,13 @@ class SearchQuery(BaseModel):
 async def generate_query(
     state: State, *, config: RunnableConfig
 ) -> dict[str, list[str]]:
-    """Generate a search query based on the current state and configuration.
-
-    This function analyzes the messages in the state and generates an appropriate
-    search query. For the first message, it uses the user's input directly.
-    For subsequent messages, it uses a language model to generate a refined query.
-
-    Args:
-        state (State): The current state containing messages and other information.
-        config (RunnableConfig | None, optional): Configuration for the query generation process.
-
-    Returns:
-        dict[str, list[str]]: A dictionary with a 'queries' key containing a list of generated queries.
-
-    Behavior:
-        - If there's only one message (first user input), it uses that as the query.
-        - For subsequent messages, it uses a language model to generate a refined query.
-        - The function uses the configuration to set up the prompt and model for query generation.
     """
-    messages = state.messages
-    if len(messages) == 1:
-        # It's the first user question. We will use the input directly to search.
-        human_input = get_message_text(messages[-1])
-        return {"queries": [human_input]}
-    else:
-        configuration = Configuration.from_runnable_config(config)
-        # Feel free to customize the prompt, model, and other logic!
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", configuration.query_system_prompt),
-                ("placeholder", "{messages}"),
-            ]
-        )
-        model = load_chat_model(configuration.query_model).with_structured_output(
-            SearchQuery
-        )
-
-        message_value = await prompt.ainvoke(
-            {
-                "messages": state.messages,
-                "queries": "\n- ".join(state.queries),
-                "system_time": datetime.now(tz=timezone.utc).isoformat(),
-            },
-            config,
-        )
-        generated = cast(SearchQuery, await model.ainvoke(message_value, config))
-        return {
-            "queries": [generated.query],
-        }
+    Generate a search query based on the latest user message.
+    Fully local, no LLM call.
+    """
+    # Usamos directamente el último mensaje humano
+    human_input = get_message_text(state.messages[-1])
+    return {"queries": [human_input]}
 
 
 async def retrieve(
@@ -199,37 +157,39 @@ async def retrieve(
 async def reflect_on_question(
     state: State, *, config: RunnableConfig
 ) -> dict[str, Reflection]:
-    """
-    Perform internal Socratic reflection on the user's last question.
-
-    This node analyzes the user's question and retrieved context,
-    but does NOT generate a user-facing response.
-    """
     configuration = Configuration.from_runnable_config(config)
 
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", reflection_system_prompt()),
-            ("placeholder", "{messages}"),
-        ]
+    model_manager = ModelManager(
+        config_path=Path(__file__).parent / "config" / "models.yaml"
+    )
+    backend = await model_manager.get_backend(configuration.response_model)
+
+    retrieved_docs = (
+        format_docs(state.retrieved_docs)
+        if state.retrieved_docs
+        else "No hay documentos relevantes."
     )
 
-    model = load_chat_model(configuration.response_model).with_structured_output(
-        Reflection
+    conversation = "\n".join(
+        f"- {get_message_text(m)}" for m in state.messages
     )
 
-    message_value = await prompt.ainvoke(
-        {
-            "messages": state.messages,
-            "retrieved_docs": state.retrieved_docs,
-        },
-        config,
+    prompt = prompts.REFLECTION_SYSTEM_PROMPT.format(
+        retrieved_docs=retrieved_docs,
+        conversation=conversation,
     )
 
-    reflection = await model.ainvoke(message_value, config)
+    response = await backend.generate(
+        prompt=prompt,
+        config=GenerationConfig(
+            max_tokens=400,
+            temperature=0.2,
+        ),
+    )
+
+    reflection = Reflection.model_validate_json(response.content)
 
     return {"reflection": reflection}
-
 
 async def respond(
     state: State, *, config: RunnableConfig

@@ -1,5 +1,3 @@
-"""Estado extendido para manejo de audio."""
-
 from dataclasses import dataclass, field
 from typing import Annotated, Literal
 from retrieval_graph.state import State

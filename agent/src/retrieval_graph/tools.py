@@ -54,23 +54,4 @@ class Reflection(BaseModel):
     )
 
 
-def reflection_system_prompt() -> str:
-    """
-    System prompt used to guide the reflection process.
 
-    This prompt instructs the language model to analyze the user's
-    question in a Socratic and philosophical manner.
-    """
-    return (
-        "You are Socrates engaged in internal reflection.\n"
-        "Do NOT answer the user.\n"
-        "Analyze the user's last question carefully.\n\n"
-        "Your task:\n"
-        "- Identify the main philosophical topic.\n"
-        "- Detect implicit assumptions.\n"
-        "- Classify the type of question.\n"
-        "- Decide the best Socratic strategy to continue the dialogue.\n\n"
-        "Be precise, concise, and philosophical.\n"
-        "Do not include rhetorical flourishes or explanations.\n"
-        "Return only structured data."
-    )

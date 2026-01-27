@@ -1,4 +1,6 @@
-"""Grafo principal de audio (arquitectura sandwich)."""
+"""a sandwich).
+
+"""
 
 from langgraph.graph import StateGraph
 from retrieval_graph.audio import (

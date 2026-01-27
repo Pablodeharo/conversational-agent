@@ -1,5 +1,3 @@
-"""Utilidades para procesamiento de audio."""
-
 import wave
 import io
 import numpy as np
