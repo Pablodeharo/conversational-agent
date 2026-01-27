@@ -63,9 +63,11 @@ Retrieved passages are never answered directly — they are used as intellectual
 
 🏗️ System Architecture
 
-Retrieval & Reasoning Graph
+## Retrieval & Reasoning Graph
 
-<p align="center"> <img src="static/Captura desde 2026-01-26 22-50-18.png" width="700"/> </p>
+<p align="center">
+  <img src="agent/src/retrieval_graph/assets/Captura%20desde%202026-01-26%2022-50-18.png" width="700"/>
+</p>
 
 Flow Overview:
 
@@ -82,18 +84,22 @@ call_model          → Generates a reflective response (Mixtral)
 __end__
 
 
-Audio Graph (LangGraph Sandwich Architecture)
+## Audio Graph (LangGraph Sandwich Architecture)
 
-<p align="center"> <img src="static/Captura desde 2026-01-26 22-50-47.png" width="700"/> </p>
+<p align="center">
+  <img src="agent/src/retrieval_graph/assets/Captura%20desde%202026-01-26%2022-50-47.png" width="700"/>
+</p>
 
 STT → Socrates (Main Graph) → TTS
 
 This allows the agent to seamlessly accept voice input and return spoken responses, without polluting the reasoning logic.
 
 
-Combined Graph View
+## Combined Graph View
 
-<p align="center"> <img src="static/Captura desde 2026-01-26 22-51-33.png" width="700"/> </p>
+<p align="center">
+  <img src="agent/src/retrieval_graph/assets/Captura%20desde%202026-01-26%2022-51-33.png" width="700"/>
+</p>
 
 This view shows how audio processing and reasoning coexist in a single LangGraph system.
 
