@@ -1,4 +1,15 @@
-"""Define the configurable parameters for the agent."""
+"""
+configuration.py
+
+Defines the configurable parameters for the conversational agent.
+
+This module centralizes all runtime configuration, including:
+- Retrieval and indexing settings
+- Model selection
+- Prompt selection
+
+Configurations are injected into the graph via RunnableConfig.
+"""
 
 from __future__ import annotations
 
@@ -12,13 +23,15 @@ from retrieval_graph import prompts
 
 @dataclass(kw_only=True)
 class IndexConfiguration:
-    """Configuration class for indexing and retrieval operations.
-
-    This class defines the parameters needed for configuring the indexing and
-    retrieval processes, including user identification, embedding model selection,
-    retriever provider choice, and search parameters.
     """
+    Configuration class for indexing and retrieval operations.
 
+    This configuration controls:
+    - User identity
+    - Embedding model
+    - Vector store provider
+    - Search parameters
+    """
     user_id: str = field(
         default="default_user",
         metadata={"description": "Unique identifier for the user."})
@@ -34,7 +47,13 @@ class IndexConfiguration:
     )
 
     retriever_provider: Annotated[
-        Literal["elastic", "elastic-local", "pinecone", "mongodb", "faiss-local"],
+        Literal[
+            "elastic",
+            "elastic-local", 
+            "pinecone", 
+            "mongodb", 
+            "faiss-local",
+        ],
         {"__template_metadata__": {"kind": "retriever"}},
     ] = field(
         default="faiss-local",
@@ -59,14 +78,11 @@ class IndexConfiguration:
     def from_runnable_config(
         cls: Type[T], config: RunnableConfig | None = None
     ) -> T:
-        """Create an IndexConfiguration instance from a RunnableConfig object.
+        """
+        Create an IndexConfiguration from a RunnableConfig object.
 
-        Args:
-            cls (Type[T]): The class itself.
-            config (Optional[RunnableConfig]): The configuration object to use.
-
-        Returns:
-            T: An instance of IndexConfiguration with the specified configuration.
+        This method extracts only the fields relevant to this class
+        from the 'configurable' section of the RunnableConfig.
         """
         config = ensure_config(config)
         configurable = config.get("configurable") or {}
@@ -79,7 +95,13 @@ T = TypeVar("T", bound=IndexConfiguration)
 
 @dataclass(kw_only=True)
 class Configuration(IndexConfiguration):
-    """The configuration for the agent."""
+    """
+    Full configuration for the conversational agent.
+
+    Extends IndexConfiguration by adding:
+    - Prompt configuration
+    - Language model selection
+    """
 
     response_system_prompt: str = field(
         default=prompts.RESPONSE_SYSTEM_PROMPT,
@@ -89,20 +111,20 @@ class Configuration(IndexConfiguration):
     response_model: Annotated[str, {"__template_metadata__": {"kind": "llm"}}] = field(
         default="mistral",
         metadata={
-            "description": "The language model used for generating responses. Should be in the form: provider/model-name."
+            "description": "LLM used for generating final responses."
         },
     )
 
     query_system_prompt: str = field(
         default=prompts.QUERY_SYSTEM_PROMPT,
         metadata={
-            "description": "The system prompt used for processing and refining queries."
+            "description": "System prompt used for query generation."
         },
     )
 
     query_model: Annotated[str, {"__template_metadata__": {"kind": "llm"}}] = field(
         default="anthropic/claude-3-haiku-20240307",
         metadata={
-            "description": "The language model used for processing and refining queries. Should be in the form: provider/model-name."
+            "description": "LLM used for query processing."
         },
     )

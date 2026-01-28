@@ -1,7 +1,19 @@
-"""a sandwich).
-
 """
+Audio graph that wraps the main reasoning graph with
+Speech-to-Text (STT) and Text-to-Speech (TTS) processing.
 
+This graph follows a "sandwich" pattern:
+
+    Audio Input
+        ↓
+      STT Node
+        ↓
+   Main Reasoning Graph (Socrates)
+        ↓
+      TTS Node
+        ↓
+     Audio Output
+"""
 from langgraph.graph import StateGraph
 from retrieval_graph.audio import (
     AudioState,
@@ -13,7 +25,8 @@ from retrieval_graph.audio import (
 from retrieval_graph.graph import graph as main_graph
 
 
-# Construir grafo sandwich
+# Build the sandwich graph:
+# STT -> Main graph -> TTS
 builder = StateGraph(
     AudioState,
     input_schema=AudioInputState,

@@ -1,22 +1,28 @@
 """
+tools.py
+
 Cognitive tools for the Socratic retrieval agent.
 
-This module defines structured reasoning tools used by the agent
-to reflect on user questions before generating a response.
-These tools do NOT directly respond to the user.
+This module defines structured data models used for internal reasoning.
+These tools are NOT responsible for generating user-facing responses.
+Instead, they guide the agent's reasoning strategy.
 """
 
 from typing import List, Literal
-
 from pydantic import BaseModel, Field
-
 
 class Reflection(BaseModel):
     """
     Represents an internal reflection about the user's question.
 
-    This structure captures the agent's analysis of the question,
-    including assumptions, topic, and the recommended Socratic strategy.
+    This model captures the agent's analysis of the question, including:
+    - The philosophical topic
+    - Implicit assumptions
+    - The type of question being asked
+    - The recommended Socratic strategy
+
+    This structure is intended for internal use only and is not shown
+    directly to the user.
     """
 
     topic: str = Field(

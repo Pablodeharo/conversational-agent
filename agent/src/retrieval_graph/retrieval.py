@@ -16,6 +16,8 @@ from typing import Generator
 from langchain_core.embeddings import Embeddings
 from langchain_core.runnables import RunnableConfig
 from langchain_core.vectorstores import VectorStoreRetriever
+from retrieval_graph.vectorstore import load_vectorstore
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 from retrieval_graph.configuration import Configuration, IndexConfiguration
 
@@ -23,7 +25,24 @@ from retrieval_graph.configuration import Configuration, IndexConfiguration
 
 
 def make_text_encoder(model: str) -> Embeddings:
-    """Connect to the configured text encoder."""
+    """
+    Create an embedding model based on a fully qualified name.
+
+    The model string must follow the format: 'provider/model'.
+
+    Supported providers:
+    - openai
+    - cohere
+
+    Args:
+        model (str): Fully qualified model name (e.g. 'openai/text-embedding-3-small').
+
+    Returns:
+        Embeddings: An initialized LangChain Embeddings object.
+
+    Raises:
+        ValueError: If the provider is not supported.
+    """
     provider, model = model.split("/", maxsplit=1)
     match provider:
         case "openai":
@@ -110,7 +129,20 @@ def make_mongodb_retriever(
 def make_faiss_retriever(
     configuration: IndexConfiguration,
 ) -> Generator[VectorStoreRetriever, None, None]:
-    """Configure a local FAISS retriever with MMR."""
+    """
+    Create a local FAISS retriever using MMR (Maximal Marginal Relevance).
+
+    This retriever:
+    - Loads a local FAISS index from disk
+    - Uses HuggingFace embeddings
+    - Applies reasonable default MMR parameters
+
+    Args:
+        configuration (IndexConfiguration): Retriever configuration.
+
+    Yields:
+        VectorStoreRetriever: Configured FAISS retriever.
+    """
     from retrieval_graph.vectorstore import load_vectorstore
     from langchain_community.embeddings import HuggingFaceEmbeddings
 
@@ -122,7 +154,7 @@ def make_faiss_retriever(
 
     search_kwargs = configuration.search_kwargs or {}
 
-    # Defaults razonables para filosofía
+    # defaults for semantic search
     search_kwargs.setdefault("k", 5)
     search_kwargs.setdefault("fetch_k", 20)
     search_kwargs.setdefault("lambda_mult", 0.5)
@@ -136,7 +168,20 @@ def make_faiss_retriever(
 def make_retriever(
     config: RunnableConfig,
 ) -> Generator[VectorStoreRetriever, None, None]:
-    """Create a retriever for the agent, based on the current configuration."""
+    """
+    Create a retriever based on the current runnable configuration.
+
+    This function:
+    - Resolves the IndexConfiguration
+    - Initializes embeddings when required
+    - Dispatches to the correct retriever backend
+
+    Args:
+        config (RunnableConfig): LangChain runnable configuration.
+
+    Yields:
+        VectorStoreRetriever: Configured retriever instance.
+    """
     configuration = IndexConfiguration.from_runnable_config(config)
     
     if configuration.retriever_provider != "faiss-local":

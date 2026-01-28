@@ -4,34 +4,46 @@ import numpy as np
 from faster_whisper import WhisperModel
 from retrieval_graph.audio.config import AudioConfiguration
 
-
 class STTProcessor:
-    """Procesador de Speech-to-Text."""
-    
+    """
+    Speech-to-Text processor based on faster-whisper.
+    """
+
     def __init__(self, config: AudioConfiguration):
+        """
+        Initialize the Whisper model with the given configuration.
+        """
         self.model = WhisperModel(
             config.whisper_model,
             device=config.whisper_device,
-            compute_type=config.whisper_compute_type
+            compute_type=config.whisper_compute_type,
         )
         self.config = config
-    
+
     def transcribe(self, audio_bytes: bytes) -> str:
-        """Transcribe audio a texto."""
-        # Convertir bytes a array numpy
-        audio_array = np.frombuffer(
-            audio_bytes, 
-            dtype=np.int16
-        ).astype(np.float32) / 32768.0
-        
+        """
+        Transcribe raw audio bytes into text.
+
+        Args:
+            audio_bytes (bytes): Raw PCM audio bytes (16-bit).
+
+        Returns:
+            str: Transcribed text.
+        """
+        # Convert bytes to float32 numpy array
+        audio_array = (
+            np.frombuffer(audio_bytes, dtype=np.int16)
+            .astype(np.float32) / 32768.0
+        )
+
         segments, info = self.model.transcribe(
             audio_array,
             language="es",
             vad_filter=True,
-            vad_parameters=dict(
-                min_silence_duration_ms=self.config.min_silence_duration_ms
-            )
+            vad_parameters={
+                "min_silence_duration_ms": self.config.min_silence_duration_ms
+            },
         )
-        
-        transcription = " ".join([seg.text for seg in segments])
+
+        transcription = " ".join(seg.text for seg in segments)
         return transcription.strip()
