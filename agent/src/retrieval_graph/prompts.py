@@ -37,37 +37,27 @@ def build_reflection_prompt(
     retrieved_context: str,
     conversation: str
 ) -> str:
-    """
-    Build a prompt for internal philosophical reflection.
-
-    This prompt instructs the model to analyze the user's question
-    and produce a structured Reflection object in JSON format.
-
-    Args:
-        retrieved_context (str):
-            Relevant documents retrieved from the knowledge base.
-        conversation (str):
-            The conversation history so far.
-
-    Returns:
-        str:
-            A formatted prompt instructing the model to output
-            a Reflection JSON object.
-    """
     return f"""
-You are a philosophical analyst.
+You are an internal reflection engine for a Socratic assistant.
 
-Using the retrieved context and the conversation below,
-analyze the user's question and output a JSON object
-matching the Reflection schema.
+Your job is to analyze the user's question and produce a JSON object
+that conforms EXACTLY to the Reflection schema.
 
-RETRIEVED CONTEXT:
+Rules:
+- Output ONLY valid JSON.
+- No explanations, no markdown, no comments.
+- Use concise values.
+- Do not repeat the retrieved text verbatim.
+- If unsure, use empty lists or nulls where allowed.
+- Ensure the JSON is complete and well-formed.
+
+RETRIEVED CONTEXT (summarize internally, do not quote):
 {retrieved_context}
 
 CONVERSATION:
 {conversation}
 
-Return ONLY valid JSON.
+Begin JSON output now.
 """
 
 

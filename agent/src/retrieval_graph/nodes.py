@@ -94,10 +94,13 @@ async def reflect_on_question(
     )
     backend = await model_manager.get_backend(configuration.response_model)
 
+    MAX_REFLECTION_DOCS = 2
+
+    docs = state.retrieved_docs[:MAX_REFLECTION_DOCS]
     # Prepare retrieved document context
     retrieved_context = (
-        format_docs(state.retrieved_docs)
-        if state.retrieved_docs
+        format_docs(docs)
+        if docs
         else "No hay documentos relevantes."
     )
     # Prepare conversation history
@@ -112,8 +115,8 @@ async def reflect_on_question(
     response = await backend.generate(
         prompt=prompt,
         config=GenerationConfig(
-            max_tokens=400,
-            temperature=0.2,
+            max_tokens=250,
+            temperature=0.1,
         ),
     )
 

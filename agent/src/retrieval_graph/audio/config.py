@@ -13,7 +13,6 @@ from retrieval_graph.configuration import Configuration
 class AudioConfiguration(Configuration):
     """Configuración extendida con parámetros de audio."""
     
-    # STT (faster-whisper)
     whisper_model: str = field(
         default="base",
         metadata={"description": "Modelo Whisper: tiny, base, small, medium"}

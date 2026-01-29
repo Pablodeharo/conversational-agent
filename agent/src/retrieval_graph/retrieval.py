@@ -193,7 +193,7 @@ def make_retriever(
     
     match configuration.retriever_provider:
         case "faiss-local":
-            # ✅ FAISS local usa sus propios embeddings (HuggingFace)
+            # FAISS local usa sus propios embeddings (HuggingFace)
             with make_faiss_retriever(configuration) as retriever:
                 yield retriever
 

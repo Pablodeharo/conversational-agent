@@ -1,7 +1,7 @@
 models:
   mistral:
     type: llamacpp
-    model_path: /home/pablo/models/mixtral_spanish_ft.Q4_0.gguf
+    model_path: /home/pablo/models/mistral-7b-instruct-v0.2.Q4_K_M.gguf
     context_length: 4096
     n_gpu_layers: 10
     n_threads: 8

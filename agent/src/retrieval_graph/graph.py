@@ -42,7 +42,6 @@ builder.add_edge("retrieve", "reflect_on_question")
 builder.add_edge("reflect_on_question", "call_model")
 builder.add_edge("call_model", "__end__")
 
-
 graph = builder.compile(
     interrupt_before=[],
     interrupt_after=[],
