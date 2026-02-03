@@ -155,7 +155,7 @@ def make_faiss_retriever(
     search_kwargs = configuration.search_kwargs or {}
 
     # defaults for semantic search
-    search_kwargs.setdefault("k", 5)
+    search_kwargs.setdefault("k", 2)
     search_kwargs.setdefault("fetch_k", 20)
     search_kwargs.setdefault("lambda_mult", 0.5)
 

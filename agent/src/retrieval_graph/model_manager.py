@@ -9,8 +9,8 @@ from typing import Dict, Optional
 import yaml
 
 from .Backend.base import ModelBackend
-from .Backend.llamacpp import LlamaCppBackend
-from .Backend.transformers import TransformersBackend
+from .Backend.llamacpp_v2 import LlamaCppBackend
+from .Backend.transformers_v2 import TransformersBackend
 
 
 class ModelManager:

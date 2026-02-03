@@ -1,11 +1,12 @@
 models:
   mistral:
     type: llamacpp
-    model_path: /home/pablo/models/mistral-7b-instruct-v0.2.Q4_K_M.gguf
-    context_length: 4096
-    n_gpu_layers: 10
+    model_path: /home/pablo/models/vicuna-7b-v1.5-q4_k_m.gguf
+    context_length: 8192
+    n_gpu_layers: 24
     n_threads: 8
-    temperature: 0.3
+    temperature: 0.0
     top_p: 0.7
-
+    verbose: false
+    json_mode: true
     
