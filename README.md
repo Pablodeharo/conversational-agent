@@ -2,45 +2,40 @@
 [![LangChain](https://img.shields.io/badge/Powered_by-LangChain-1c3c3c.svg)](https://github.com/langchain-ai/langchain)
 [![Python](https://img.shields.io/badge/Python-Backend_AI-blue.svg)](https://www.python.org/)
 
-A Local, Conversational Agent
+Socrates is a local-first Retrieval-Augmented Generation (RAG) system designed to reason over Plato’s complete works using semantic retrieval, vector databases, and graph-based orchestration.
 
-Socrates is a local-first, multilingual conversational agent that engages users using the Socratic method, grounded in Plato’s complete works, enriched with semantic retrieval, and orchestrated through LangGraph.
-It can converse via text or voice, running entirely on your own machine using a local Mixtral model.
+The system combines:
 
-This project explores how classical philosophy, modern NLP pipelines, and graph-based AI orchestration can meet in a single system.
+- Classical philosophical texts
 
+- Embedding-based semantic search (FAISS)
 
-<p align="center">
-  <img src="agent/src/retrieval_graph/assets/arg-rag.png" width="700"/>
-</p>
+- A local large language model (Mixtral)
+
+- A Socratic reasoning loop instead of direct question answering
+
+All components run entirely on your local machine, without external APIs.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-🧠 Philosophy Meets Pipelines — The Data Story
+## Retrieval-Augmented Generation Architecture
 
-This project does not rely on pre-packaged datasets.
+<p align="center"> <img src="agent/src/retrieval_graph/assets/arq-rag.png" width="700"/> </p>
 
-Instead, the knowledge pipeline looks like this:
 
-1. 🕷️ Scraping
+High-level RAG Flow
 
-Plato’s complete works are scraped from filosofia.org using Scrapy.
+1. Plato’s complete works are indexed and chunked
 
-2. 🧬 Linguistic Analysis
+2. Text chunks are embedded and stored in a FAISS vector database
 
-Texts are processed with spaCy for NLP analysis and normalization.
+3. User queries are transformed into semantic search queries
 
-3. 📦 Structured Storage
+4. Relevant passages are retrieved as contextual grounding
 
-The processed output is saved as a structured JSON file: (platon_analisis_nlp.json)
+5. A local LLM generates responses grounded in retrieved context
 
-4. 🔎 Semantic Indexing
-
-Documents are embedded using: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-
-5. 🧠 Socratic Retrieval
-
-Retrieved passages are never answered directly — they are used as intellectual tension for Socratic reflection.
+Unlike traditional RAG pipelines, retrieved passages are not used to answer directly, but to shape reflective reasoning.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -92,6 +87,29 @@ This view shows how audio processing and reasoning coexist in a single LangGraph
 
 -----------------------------------------------------------------------------------------------------------------------------
 
+## Philosophy Meets Piplines - The Data Story
+
+This project does not rely on pre-packaged datasets.
+Instead, the knowledge pipeline looks like this:
+
+1. Scraping
+
+Plato´s complete works are scraped from filosofia.org using Scrapy
+
+2. Linguistic Analysis
+
+Texts are processed with spaCy for NLP analysis and normalization-
+
+3. Semantic Indexing
+
+Documents are embedded using: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
+4. Socratic Retrieval
+
+Retrieved passages are never answered directly — they are used as intellectual tension for Socratic reflection.
+
+-----------------------------------------------------------------------------------------------------------------------
+
 🚀 Getting Started
 
 git clone https://github.com/pablodeharo/conversational-agent.git
@@ -106,7 +124,7 @@ Model Configuration (config/models.yaml)
 mixtral:
   backend: llamacpp
   model_path: /path/to/mixtral_spanish_ft.Q4_0.gguf (Your local path) 
-  context_length: 8192
+  context_length: llm context
   n_gpu_layers: 35
   n_threads: 8
   temperature: 0.7
