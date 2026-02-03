@@ -2,36 +2,19 @@
 [![LangChain](https://img.shields.io/badge/Powered_by-LangChain-1c3c3c.svg)](https://github.com/langchain-ai/langchain)
 [![Python](https://img.shields.io/badge/Python-Backend_AI-blue.svg)](https://www.python.org/)
 
-A Local, Voice-Enabled Socratic Conversational Agent
+A Local, Conversational Agent
 
 Socrates is a local-first, multilingual conversational agent that engages users using the Socratic method, grounded in Plato’s complete works, enriched with semantic retrieval, and orchestrated through LangGraph.
 It can converse via text or voice, running entirely on your own machine using a local Mixtral model.
 
 This project explores how classical philosophy, modern NLP pipelines, and graph-based AI orchestration can meet in a single system.
 
+
+<p align="center">
+  <img src="agent/src/retrieval_graph/assets/arg-rag.png" width="700"/>
+</p>
+
 ------------------------------------------------------------------------------------------------------------------------------
-
-✨ Core Features
-
-🎭 Socratic Reasoning
-Rather than answering directly, the agent challenges assumptions through reflective questioning.
-
-📚 Plato as a Knowledge Base
-All of Plato’s works are scraped, analyzed, embedded, and stored locally for semantic retrieval.
-
-🧠 Graph-Based Reasoning (LangGraph)
-Explicit multi-step reasoning: query generation → retrieval → reflection → response.
-
-🔊 Voice In / Voice Out
-Optional speech-to-text (Whisper) and text-to-speech (Kokoro / Edge / Piper) via a LangGraph sandwich architecture.
-
-🖥️ Fully Local LLM
-Runs a Spanish fine-tuned Mixtral model locally (GGUF via llama.cpp).
-
-🌍 Multilingual by Design
-Optimized for Spanish, but supports cross-lingual retrieval.
-
---------------------------------------------------------------------------------------------------------------------------------
 
 🧠 Philosophy Meets Pipelines — The Data Story
 
@@ -69,6 +52,7 @@ Retrieved passages are never answered directly — they are used as intellectual
   <img src="agent/src/retrieval_graph/assets/Captura%20desde%202026-01-26%2022-50-18.png" width="700"/>
 </p>
 
+
 Flow Overview:
 
 __start__
@@ -83,6 +67,9 @@ call_model          → Generates a reflective response (Mixtral)
    ↓
 __end__
 
+<p align="center">
+  <img src="agent/src/retrieval_graph/assets/retrieve.png" width="700"/>
+</p>
 
 ## Audio Graph (LangGraph Sandwich Architecture)
 
